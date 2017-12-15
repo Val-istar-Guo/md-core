@@ -1,0 +1,24 @@
+{
+  "name": "md-core",
+  "version": "0.0.1",
+  "description": "markdown parse core",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Val-istar-Guo/md-core.git"
+  },
+  "keywords": [
+    "markdown",
+    "md",
+    "md-core"
+  ],
+  "author": "Val.istar.Guo <Val.istar.Guo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Val-istar-Guo/md-core/issues"
+  },
+  "homepage": "https://github.com/Val-istar-Guo/md-core#readme"
+}
