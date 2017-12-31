@@ -2,9 +2,10 @@
   "name": "md-core",
   "version": "0.0.2-alpha.1",
   "description": "markdown parse core",
-  "main": "dist/bundle.js",
+  "main": "dist/",
   "scripts": {
-    "build": "rollup -c",
+    "clean": "rm -rf ./dist/*",
+    "build": "npm run clean & rollup -c",
     "test": "mocha --compilers js:babel-core/register",
     "prepublishOnly": "npm test; npm run build",
     "precommit": "npm test"

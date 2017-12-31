@@ -1,8 +1,6 @@
-import * as nodes from './nodes';
+import { Node, TempN, Group } from './nodes';
 import { createDebug } from './logger';
 
-
-const { Node, TempN, Group } = nodes;
 
 const parse = (queue, ctx, opts, root) => {
   const debug = createDebug(opts);
@@ -81,4 +79,4 @@ Md.prototype.use = function (middleware) {
   return this;
 }
 
-export default { md: Md, nodes };
+export default Md;
