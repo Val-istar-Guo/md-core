@@ -22,25 +22,4 @@ export default [{
       exclude: 'node_modules/**',
     }),
   ],
-}, {
-  input: 'src/nodes/index.js',
-  output: {
-    file: 'dist/nodes.js',
-    format: 'cjs',
-  },
-
-  plugins: [
-    resolve(),
-    babel({
-      babelrc: false,
-      presets: [
-        ["env", {
-          modules: false
-        }],
-      ],
-      plugins: ["transform-object-rest-spread", "external-helpers"],
-      // runtimeHelpers: true,
-      exclude: 'node_modules/**',
-    }),
-  ],
 }];

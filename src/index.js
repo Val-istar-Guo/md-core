@@ -1,6 +1,7 @@
-import { Node, TempN, Group } from './nodes';
+import * as nodes from './nodes';
 import { createDebug } from './logger';
 
+const { Node, TempN, Group } = nodes;
 
 const parse = (queue, ctx, opts, root) => {
   const debug = createDebug(opts);
@@ -56,12 +57,13 @@ const parse = (queue, ctx, opts, root) => {
 }
 
 
-const Md = function () {
+const Md = function (opts = {}) {
   if (!(this instanceof Md)) {
     return new Md();
   }
 
   this.__middleware_queue = [];
+  this.__opts = opts;
 }
 
 Md.prototype.parse = function (str, opts = {}) {
@@ -71,12 +73,14 @@ Md.prototype.parse = function (str, opts = {}) {
 
   const ctx = {};
   const blocks = new TempN('source', [str]);
-  return parse(this.__middleware_queue, ctx, opts, blocks);
+  return parse(this.__middleware_queue, ctx, { ...this.__opts, ...opts }, blocks);
 }
 
 Md.prototype.use = function (middleware) {
   this.__middleware_queue.push(middleware);
   return this;
 }
+
+Md.nodes = nodes;
 
 export default Md;

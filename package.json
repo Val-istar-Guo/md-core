@@ -36,6 +36,7 @@
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "dependencies": {
+    "md-plugins-vig": "0.0.1-alpha.3",
     "rollup-plugin-babel": "^3.0.3"
   }
 }

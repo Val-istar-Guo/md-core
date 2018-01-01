@@ -1,1 +1,1 @@
-export const createDebug = opts => (...arg) => opts.isDebug && console.log(...arg);
+export const createDebug = opts => (...arg) => opts.debug && console.log(...arg);
