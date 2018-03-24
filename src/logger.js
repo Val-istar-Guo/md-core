@@ -1,1 +1,1 @@
-export const createDebug = opts => (...arg) => opts.debug && console.log(...arg);
+export default enable => (...arg) => enable && console.log(...arg);
