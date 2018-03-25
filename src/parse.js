@@ -1,4 +1,9 @@
-import { isVNode, vnode, VNode, isChild, vtext, fragment, isFragment } from './nodes';
+import {
+  isVNode, isChild, isFragment,
+  vnode, vtext, fragment,
+  format,
+} from './nodes';
+
 
 const parseArray = (middlewares, option, context, arr) => {
   const results = arr
@@ -33,7 +38,12 @@ const parse = (middlewares, option, context, node) => {
   logger('-----------------');
 
   // 如果被编译过，则继续的标签继续尝试
-  if (Array.isArray(node)) return parseArray(middlewares, option, context, node);
+  if (Array.isArray(result)) {
+    result = result.map(format);
+    return parseArray(middlewares, option, context, result);
+  }
+  if (typeof result === 'string') result = vtext(result);
+  // OPTIMIZE: if result is not string or array, ex. number, how to handle it?
   if (result !== node) return parse(middlewares, option, context, result);
 
   // 当可不被继续编译，则对其子节点编译
@@ -41,6 +51,7 @@ const parse = (middlewares, option, context, node) => {
   if (isVNode(node)) {
     node.children = parseArray(middlewares, option, context, node.children);
   }
+
   return node;
 }
 

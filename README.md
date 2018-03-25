@@ -21,7 +21,7 @@ import {
   hr, list, blockquote, table, code, paragraph,
   hyperlink, image, autolink, escaped,
   inlineCode, inlineBold, inlineItalics,
-  coseLineCode,
+  coseLineCode, highlight, html,
 } from 'md-plugins-vig';
 
 
@@ -29,6 +29,7 @@ export default md({ debug : true })
   .use(normalize())
   .use(coseLineCode())
   .use(code())
+  .use(highlight())
   .use(atxHeader())
   .use(setextHeader())
   .use(hr())
@@ -36,13 +37,14 @@ export default md({ debug : true })
   .use(blockquote())
   .use(table())
   .use(paragraph())
+  .use(escaped())
   .use(inlineCode())
   .use(inlineBold())
   .use(inlineItalics())
   .use(hyperlink())
   .use(image())
   .use(autolink())
-  .use(escaped())
+  .use(html())
 ```
 
 Then import your costom md
