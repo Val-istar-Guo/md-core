@@ -1,6 +1,3 @@
-import { vnode, vtext } from './nodes';
-
-
 export const combineString = arr => {
   let stringArr = []
   const resultArr = []
