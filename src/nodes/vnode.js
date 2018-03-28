@@ -21,7 +21,6 @@ export default class VNode {
     this.tagName = tagName;
     this.properties = properties;
 
-    // OPTIMIZE: children may have fragment
     this.children = children;
 
     this.count = count;

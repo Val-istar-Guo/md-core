@@ -5,6 +5,43 @@ import {
 } from './nodes';
 
 
+const matchName = (middleware, node, option) => {
+  const { input } = middleware;
+  const { name } = node;
+
+  if (typeof input === 'string') return input === name;
+  if (typeof input === 'function') return input(name);
+  if (input instanceof RegExp) return input.test(name);
+
+  console.warn(`[md-core] the middleware: ${middleware.name || 'unknow'}@${middleware.version || 'unknow'}'s input property is illegal`);
+  return false;
+}
+
+const matchMiddleware = (middlewares, option, context, node) => {
+  for (let middleware of middlewares) {
+    if (matchName(middleware, node, option)) {
+      /**
+       * 尝试编译
+       * 如果有中间件返回 node || undefined || null
+       * 则该中间价无法解析该节点
+       */
+      let result = middleware.parse(node, option, context);
+
+      if (result === node || result === undefined || result === null) continue;
+
+      result.option = option;
+      result.context = context;
+
+      if (Array.isArray(result)) result = result.map(format);
+      else if (!isChild(result)) result = format(result);
+
+      return { matched: true, result, middleware };
+    }
+  }
+
+  return { matched: false };
+}
+
 const parseArray = (middlewares, option, context, arr) => {
   const results = arr
     .map(child => parse(middlewares, option, context, child));
@@ -13,56 +50,35 @@ const parseArray = (middlewares, option, context, arr) => {
 }
 
 const parse = (middlewares, option, context, node) => {
-  let result = node;
-  const { logger } = option;
+  // const { notice } = option.logger;
 
-  logger('-----------------');
-  logger('**** input: ', node);
+  const { matched, result, middleware } = matchMiddleware(middlewares, option, context, node);
 
-  // 尝试编译，如果有中间件能够进行编译，则result !== node
-  for (let middleware of middlewares) {
-    if (node.name === middleware.input) {
-      logger(`**** middleware: ${middleware.name || 'unknow'}@${middleware.version || 'unknow'}`);
-      result = middleware.parse(node, option, context);
+  if (matched) {
+    // notice('[md-core] input: ', node);
+    // notice(`[md-core] middleware: ${middleware}`);
+    // notice('[md-core] output: ', result);
+    // notice('---------------------------------------------------------------------------------------');
 
-      if (result !== node) {
-        result.option = option;
-        result.context = context;
-        break;
-      }
-    }
+    if (Array.isArray(result)) return parseArray(middlewares, option, context, result);
+    return parse(middlewares, option, context, result);
   }
 
-  logger('**** output: ', result);
-  logger('**** judge: ', result !== node);
-  logger('-----------------');
-
-  // 如果被编译过，则继续的标签继续尝试
-  if (Array.isArray(result)) {
-    result = result.map(format);
-    return parseArray(middlewares, option, context, result);
-  }
-  if (typeof result === 'string') result = vtext(result);
-  // OPTIMIZE: if result is not string or array, ex. number, how to handle it?
-  if (result !== node) return parse(middlewares, option, context, result);
-
-  // 当可不被继续编译，则对其子节点编译
   if (isFragment(node)) return parseArray(middlewares, option, context, node.children);
-  if (isVNode(node)) {
-    node.children = parseArray(middlewares, option, context, node.children);
-  }
-
+  if (isVNode(node)) node.children = parseArray(middlewares, option, context, node.children);
   return node;
 }
 
 export default (middlewares, option, context, string) => {
+  // const { notice } = option.logger;
+
   const source$ = vtext(string);
   source$.name = 'source';
   source$.option = option;
   source$.context = context;
 
-  option.logger('========START========');
+  // notice('========START========');
   const result = parse(middlewares, option, context, source$);
-  option.logger('=========END=========');
+  // notice('=========END=========');
   return isChild(result) ? result : fragment(result) ;
 }

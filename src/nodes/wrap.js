@@ -2,19 +2,13 @@ import VNode from './vnode';
 import VText from './vtext';
 import Fragment from './fragment';
 import { isChild } from './validate';
+import { combineString } from '../utils';
 
 export const format = child => {
-  if (typeof child === 'string') {
-    return new VText(child);
-  } else if (typeof child === 'number') {
-    return new VText(String(child));
-  } else if (child === null || child === undefined) {
-    return;
-  } else if (isChild(child)) {
-    return child;
-  } else {
-    throw new Error('unexpect element');
-  }
+  if (isChild(child)) return child;
+
+  // NOTE: should i throw Error when child is object || array || null || undefined
+  return vtext(`${child}`);
 };
 
 export const nodeWrap = Node => (tagName, properties = {}, children = []) => {
@@ -23,6 +17,7 @@ export const nodeWrap = Node => (tagName, properties = {}, children = []) => {
     properties = {};
   }
 
+  children = combineString(children);
   children = children.map(format);
 
   return new Node(tagName, properties, children)
