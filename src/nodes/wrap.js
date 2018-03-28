@@ -24,7 +24,7 @@ export const nodeWrap = Node => (tagName, properties = {}, children = []) => {
 }
 
 export const wrap = Text => (...arg) => new Text(...arg);
-export const fragmentWrap = N => children => new N(children.map(format));
+export const fragmentWrap = N => children => new N(combineString(children).map(format));
 
 
 
