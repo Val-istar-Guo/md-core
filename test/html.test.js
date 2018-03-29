@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { inspect } from 'util'
 import html from '../src/nodes/html';
 
-// const text = `xxxxxx</a href='miaooo.me' />`;
+const text = `xxxxxx</a href='miaooo.me' />xxxx`;
 // const text = `
 // <div>
 //   i am <a href="miaooo.me">guo zhi hao</a>
@@ -14,16 +14,8 @@ import html from '../src/nodes/html';
 // </div>
 // `;
 
-const text = `
-xxxxx
-<div>aaa</div>
-bbb
-<p>ccccc</p>
-`;
-
 describe ('# html', function () {
   it ('should parse html string', function () {
-    // expect(html('<p>xxxxxx</p>')).to.equal('');
     console.log(inspect(html(text), false, null));
   })
 })

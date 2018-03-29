@@ -38,6 +38,7 @@ const parseTag = string => {
 
 const parse = string => {
   const stack = [];
+  let lastIndex = 0;
 
   let node = {
     tagName: '',
@@ -48,8 +49,14 @@ const parse = string => {
   while (true) {
     const matched = patt.exec(string);
 
-    if (!matched) break;
+    // if (!matched) break;
+    if (!matched) {
+      console.log(lastIndex, string.substr(lastIndex));
+      node.children.push(string.substr(lastIndex));
+      break;
+    }
 
+    lastIndex = patt.lastIndex;
     const [, text, tagString, endTag, selfCloseTag, startTag] = matched;
     if (text) node.children.push(text);
 
