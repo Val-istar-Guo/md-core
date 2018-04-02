@@ -1,9 +1,9 @@
 // g1 string, g2 endTag, g3 selfCloseTag, g4 startTag
-import { vnode, vtext } from './wrap';
+import { vnode, vtext, annotation } from './wrap';
 import { combineString } from '../utils';
 
 
-const patt = /([\s\S]*?)((?:<\/([\w-]*?)>)|(?:<(.*?)\/>)|(?:<(.*?)>))/g;
+const patt = /([\s\S]*?)((?:<!--(.*?)-->)|(?:<\/([\w-]*?)>)|(?:<(.*?)\/>)|(?:<(.*?)>))/g;
 const tagPatt = /<[\w-]>/
 
 const parseTag = string => {
@@ -57,7 +57,7 @@ const parse = string => {
     }
 
     lastIndex = patt.lastIndex;
-    const [, text, tagString, endTag, selfCloseTag, startTag] = matched;
+    const [, text, tagString, htmlAnnotation, endTag, selfCloseTag, startTag] = matched;
     if (text) node.children.push(text);
 
     if (startTag) {
@@ -83,6 +83,11 @@ const parse = string => {
       } catch (e) {
         node.children.push(tagString)
       }
+    } else if (annotation) {
+      console.log('==========annotation============');
+      console.log(htmlAnnotation)
+      const node$ = annotation(htmlAnnotation)
+      node.children.push(node$)
     }
   }
 
