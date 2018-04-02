@@ -32,7 +32,6 @@ const parseTag = string => {
       return obj;
     }, {});
 
-    // console.log('parseTag: ', tagName, properties);
   return { tagName, properties, children: [] };
 }
 
@@ -49,7 +48,6 @@ const parse = string => {
   while (true) {
     const matched = patt.exec(string);
 
-    // if (!matched) break;
     if (!matched) {
       console.log(lastIndex, string.substr(lastIndex));
       node.children.push(string.substr(lastIndex));
@@ -84,8 +82,6 @@ const parse = string => {
         node.children.push(tagString)
       }
     } else if (annotation) {
-      console.log('==========annotation============');
-      console.log(htmlAnnotation)
       const node$ = annotation(htmlAnnotation)
       node.children.push(node$)
     }
