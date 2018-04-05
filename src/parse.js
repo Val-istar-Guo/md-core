@@ -55,10 +55,10 @@ const parse = (middlewares, option, context, node) => {
   const { matched, result, middleware } = matchMiddleware(middlewares, option, context, node);
 
   if (matched) {
-    // notice('[md-core] input: ', node);
-    // notice(`[md-core] middleware: ${middleware}`);
-    // notice('[md-core] output: ', result);
-    // notice('---------------------------------------------------------------------------------------');
+    // console.log('[md-core] input: ', node);
+    // console.log(`[md-core] middleware: ${middleware}`);
+    // console.log('[md-core] output: ', result);
+    // console.log('---------------------------------------------------------------------------------------');
 
     if (Array.isArray(result)) return parseArray(middlewares, option, context, result);
     return parse(middlewares, option, context, result);
@@ -77,8 +77,8 @@ export default (middlewares, option, context, string) => {
   source$.option = option;
   source$.context = context;
 
-  // notice('========START========');
+  // console.log('========START========');
   const result = parse(middlewares, option, context, source$);
-  // notice('=========END=========');
+  // console.log('=========END=========');
   return isChild(result) ? result : fragment(result) ;
 }

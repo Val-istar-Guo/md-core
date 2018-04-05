@@ -5,7 +5,8 @@ export const combineString = arr => {
   arr.forEach(value => {
     if (typeof value === 'string' || typeof value === 'number') stringArr.push(value)
     else {
-      resultArr.push(stringArr.join(''), value)
+      if (stringArr.length) resultArr.push(stringArr.join(''))
+      resultArr.push(value)
       stringArr = []
     }
   })
