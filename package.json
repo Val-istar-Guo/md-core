@@ -1,6 +1,6 @@
 {
   "name": "md-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "markdown parse core",
   "main": "dist/",
   "scripts": {
