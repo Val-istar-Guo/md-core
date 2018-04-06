@@ -64,6 +64,8 @@ const parse = (middlewares, option, context, node) => {
     return parse(middlewares, option, context, result);
   }
 
+  // console.log('[md-core] unmatched', node)
+
   if (isFragment(node)) return parseArray(middlewares, option, context, node.children);
   if (isVNode(node)) node.children = parseArray(middlewares, option, context, node.children);
   return node;

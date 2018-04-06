@@ -1,43 +1,44 @@
 // g1 string, g2 endTag, g3 selfCloseTag, g4 startTag
-import { vnode, vtext, annotation } from './wrap';
-import { combineString } from '../utils';
+import { vnode, vtext, annotation } from './wrap'
+import { combineString } from '../utils'
 
 
-const patt = /([\s\S]*?)((?:<!--(.*?)-->)|(?:<\/([\w-]*?)>)|(?:<(.*?)\/>)|(?:<(.*?)>))/g;
+const patt = /([\s\S]*?)((?:<!--(.*?)-->)|(?:<\/([\w-]+?)>)|(?:<(.+?)\/>)|(?:<(.+?)>))/g
 const tagPatt = /<[\w-]>/
 
+
+const parseProps = str => {
+  const patt = / (\S+?)(?:=(["']?)(.*?)\2)?(?=\s|$)/g
+  const group = []
+
+  while(true) {
+    const matched = patt.exec(str)
+    if (!matched) break
+
+    const [, key, , value] = matched
+    group.push({ key, value: value || true })
+  }
+
+  return group
+    .reduce((obj, { key, value }) => {
+      obj[key] = value
+      return obj
+    }, {})
+}
+
 const parseTag = string => {
-  const [tagName, ...props] = string.split(/[\s\/]+/);
+  const matched = /^([\w-]+)((?: \S+(?:=(["']?).*?\3))*)\s*$/.exec(string)
+  if (!matched) throw new Error()
 
-  if (!tagName || !/^[\w-]*$/.test(tagName)) throw new Error();
+  const [, tagName, props] = matched
+  const properties = parseProps(props)
 
-  const properties = props
-    .filter(prop => !!prop)
-    .map(prop => {
-      const index = prop.indexOf('=');
-
-      if (index === -1) {
-        return [prop, 'true'];
-      } else {
-        const key = prop.substring(0, index);
-        let value = prop.substr(index + 1);
-
-        value = value.replace(/^(["']?)(.*)\1/,'$2');
-
-        return [key, value];
-      }
-    })
-    .reduce((obj, [k, v]) => {
-      obj[k] = v;
-      return obj;
-    }, {});
-
-  return { tagName, properties, children: [] };
+  return { tagName, properties, children: [] }
 }
 
 const parse = string => {
-  const stack = [];
-  let lastIndex = 0;
+  const stack = []
+  let lastIndex = 0
 
   let node = {
     tagName: '',
@@ -46,17 +47,16 @@ const parse = string => {
   }
 
   while (true) {
-    const matched = patt.exec(string);
+    const matched = patt.exec(string)
 
     if (!matched) {
-      console.log(lastIndex, string.substr(lastIndex));
-      node.children.push(string.substr(lastIndex));
-      break;
+      node.children.push(string.substr(lastIndex))
+      break
     }
 
-    lastIndex = patt.lastIndex;
-    const [, text, tagString, htmlAnnotation, endTag, selfCloseTag, startTag] = matched;
-    if (text) node.children.push(text);
+    lastIndex = patt.lastIndex
+    const [, text, tagString, htmlAnnotation, endTag, selfCloseTag, startTag] = matched
+    if (text) node.children.push(text)
 
     if (startTag) {
       stack.push(node)
@@ -75,8 +75,8 @@ const parse = string => {
       }
     } else if (selfCloseTag) {
       try {
-        const { tagName, properties, children } = parseTag(selfCloseTag);
-        const node$ = vnode(tagName, properties, children);
+        const { tagName, properties, children } = parseTag(selfCloseTag)
+        const node$ = vnode(tagName, properties, children)
         node.children.push(node$)
       } catch (e) {
         node.children.push(tagString)
@@ -89,15 +89,15 @@ const parse = string => {
 
   // 处理未出栈的标签
   while (stack.length) {
-    // console.log('------------------');
-    // console.log('node: ', node);
-    // console.log('------------------');
-    const node$ = vnode(node.tagName, node.properties, node.children);
+    // console.log('------------------')
+    // console.log('node: ', node)
+    // console.log('------------------')
+    const node$ = vnode(node.tagName, node.properties, node.children)
     node = stack.pop()
     node.children.push(node$)
   }
 
-  return combineString(node.children);
+  return combineString(node.children)
 }
 
-export default parse;
+export default parse
