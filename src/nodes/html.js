@@ -1,6 +1,6 @@
 // g1 string, g2 endTag, g3 selfCloseTag, g4 startTag
 import { vnode, vtext, annotation } from './wrap'
-import { combineString } from '../utils'
+import { combineString, htmlDecode } from '../utils'
 
 
 const patt = /([\s\S]*?)((?:<!--(.*?)-->)|(?:<\/([\w-]+?)>)|(?:<(.+?)\/>)|(?:<(.+?)>))/g
@@ -36,7 +36,7 @@ const parseTag = string => {
   return { tagName, properties, children: [] }
 }
 
-const parse = string => {
+const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
   const stack = []
   let lastIndex = 0
 
@@ -46,23 +46,34 @@ const parse = string => {
     children: [],
   }
 
+  const pushString = (n, s) => {
+    if (!onlyDecodeChildString || stack.length) {
+      n.children.push(htmlDecode(s))
+    } else n.children.push(s)
+  }
+
   while (true) {
     const matched = patt.exec(string)
 
     if (!matched) {
-      node.children.push(string.substr(lastIndex))
+      pushString(node, string.substr(lastIndex))
       break
     }
 
     lastIndex = patt.lastIndex
     const [, text, tagString, htmlAnnotation, endTag, selfCloseTag, startTag] = matched
-    if (text) node.children.push(text)
+    if (text) pushString(node, text)
 
-    if (startTag) {
+    // NOTE: 搜索字符串中的html时,以 /< 开头的认为是转义字符，不做处理
+    if (searchHtml && !stack.length && /\\$/.test(text)) {
+      pushString(node, tagString)
+    } else if (startTag) {
+      console.log('start tag: ', startTag, node)
       stack.push(node)
       try {
         node = parseTag(startTag)
       } catch (e) {
+        node = stack.pop()
         node.children.push(tagString)
       }
     } else if (endTag) {
@@ -71,7 +82,7 @@ const parse = string => {
         node = stack.pop()
         node.children.push(node$)
       } else {
-        node.children.push(tagString)
+        pushString(node, tagString)
       }
     } else if (selfCloseTag) {
       try {
@@ -79,7 +90,7 @@ const parse = string => {
         const node$ = vnode(tagName, properties, children)
         node.children.push(node$)
       } catch (e) {
-        node.children.push(tagString)
+        pushString(node, tagString)
       }
     } else if (annotation) {
       const node$ = annotation(htmlAnnotation)
@@ -89,9 +100,10 @@ const parse = string => {
 
   // 处理未出栈的标签
   while (stack.length) {
-    // console.log('------------------')
-    // console.log('node: ', node)
-    // console.log('------------------')
+    console.log('------------------')
+    console.log('stack: ', stack.length)
+    console.log('node: ', node)
+    console.log('------------------')
     const node$ = vnode(node.tagName, node.properties, node.children)
     node = stack.pop()
     node.children.push(node$)
