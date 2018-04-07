@@ -1,5 +1,6 @@
 // g1 string, g2 endTag, g3 selfCloseTag, g4 startTag
-import { vnode, vtext, annotation } from './wrap'
+import { vnode, annotation } from './wrap'
+import { isChild } from './validate'
 import { combineString, htmlDecode } from '../utils'
 
 
@@ -36,7 +37,7 @@ const parseTag = string => {
   return { tagName, properties, children: [] }
 }
 
-const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
+const parse = (string, onlyDecodeChildString = false, onlyFirst = false) => {
   const stack = []
   let lastIndex = 0
 
@@ -53,10 +54,22 @@ const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
   }
 
   while (true) {
+    // 如果设置onlyFirst, 则其实字符必须是标签，切只匹配第一个闭合标签
+    if (onlyFirst && !stack.length && node.children.length) {
+      if (isChild(node.children[0])) {
+        pushString(node, string.substr(lastIndex))
+        break
+      } else {
+        node.children = []
+        pushString(node, string)
+        break;
+      }
+    }
+
     const matched = patt.exec(string)
 
     if (!matched) {
-      pushString(node, string.substr(lastIndex))
+      if (string.length > lastIndex) pushString(node, string.substr(lastIndex))
       break
     }
 
@@ -64,10 +77,7 @@ const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
     const [, text, tagString, htmlAnnotation, endTag, selfCloseTag, startTag] = matched
     if (text) pushString(node, text)
 
-    // NOTE: 搜索字符串中的html时,以 /< 开头的认为是转义字符，不做处理
-    if (searchHtml && !stack.length && /\\$/.test(text)) {
-      pushString(node, tagString)
-    } else if (startTag) {
+    if (startTag) {
       stack.push(node)
       try {
         node = parseTag(startTag)
