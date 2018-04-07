@@ -68,7 +68,6 @@ const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
     if (searchHtml && !stack.length && /\\$/.test(text)) {
       pushString(node, tagString)
     } else if (startTag) {
-      console.log('start tag: ', startTag, node)
       stack.push(node)
       try {
         node = parseTag(startTag)
@@ -100,10 +99,10 @@ const parse = (string, searchHtml = true, onlyDecodeChildString = true) => {
 
   // 处理未出栈的标签
   while (stack.length) {
-    console.log('------------------')
-    console.log('stack: ', stack.length)
-    console.log('node: ', node)
-    console.log('------------------')
+    // console.log('------------------')
+    // console.log('stack: ', stack.length)
+    // console.log('node: ', node)
+    // console.log('------------------')
     const node$ = vnode(node.tagName, node.properties, node.children)
     node = stack.pop()
     node.children.push(node$)
