@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import { inspect } from 'util'
+import test from 'ava';
 import html from '../src/nodes/html';
 
 // const text = `xxxxxx</a href='miaooo.me' />xxxx`;
@@ -17,14 +16,6 @@ import html from '../src/nodes/html';
 // `;
 
 // const text = 'string\\<a href="miaooo.me" ><span>1a</span></a>'
-const text = 'string<a href="miaooo.me" >\\<span>1a</span></a>'
+// const text = 'string<a href="miaooo.me" >\\<span>1a</span></a>'
 
-describe ('# html', function () {
-  it ('should parse html string', function () {
-    console.log(inspect(html(text), false, null));
-  })
-
-  // it ('should parse annotation', function () {
-
-  // })
-})
+test.todo('# html should parse html string')

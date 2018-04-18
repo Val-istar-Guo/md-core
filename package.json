@@ -6,9 +6,10 @@
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "build": "npm run clean & rollup -c",
-    "test": "mocha --compilers js:babel-core/register",
+    "test": "ava",
     "prepublishOnly": "npm test; npm run build",
-    "precommit": "npm test"
+    "precommit": "npm test",
+    "upgrade": "mili upgrade"
   },
   "repository": {
     "type": "git",
@@ -25,17 +26,37 @@
     "url": "https://github.com/Val-istar-Guo/md-core/issues"
   },
   "homepage": "https://github.com/Val-istar-Guo/md-core#readme",
+  "engines": {
+    "node": ">=8.9.4"
+  },
+  "mili": {
+    "type": "component",
+    "encoding": "utf8"
+  },
   "devDependencies": {
+    "ava": "^1.0.0-beta.4",
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "chai": "^4.1.2",
-    "mocha": "^4.1.0",
-    "rollup": "^0.56.5",
-    "rollup-plugin-node-resolve": "^3.2.0",
-    "rollup-plugin-babel": "^3.0.3"
+    "babel-register": "^6.26.0",
+    "husky": "^0.14.3",
+    "mili": "0.0.1",
+    "rollup": "^0.58.0",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-node-resolve": "^3.3.0"
   },
-  "dependencies": {
+  "dependencies": {},
+  "ava": {
+    "files": [
+      "test/**/*.js"
+    ],
+    "sources": [
+      "src/**/*.js"
+    ],
+    "failFast": true,
+    "require": [
+      "babel-register"
+    ]
   }
 }

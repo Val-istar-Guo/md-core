@@ -1,12 +1,8 @@
-import { expect } from 'chai';
+import test from 'ava'
 import { inspect } from 'util'
-import { combineString } from '../src/utils';
+import { combineString } from '../src/utils'
 
 
-describe('# combineString', function () {
-  it('should combine string in arr', function () {
-    // console.log(combineString([1, '222', {}, '22', '12']))
-    expect(combineString([1, '222', {}, '22', '12']))
-      .to.deep.equal(['1222', {}, '2212'])
-  })
+test('# combineString should combine string in arr', t => {
+  t.deepEqual(combineString([1, '222', {}, '22', '12']), ['1222', {}, '2212'])
 })
