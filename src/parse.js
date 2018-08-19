@@ -1,86 +1,30 @@
-import {
-  isVNode, isChild, isFragment,
-  vnode, vtext, fragment,
-  format,
-} from './nodes';
+import { node, root, isRSTNode, format } from './ast'
+import { flatten } from './utils'
 
 
-const matchName = (middleware, node, option) => {
-  const { input } = middleware;
-  const { name } = node;
-
-  if (typeof input === 'string') return input === name;
-  if (typeof input === 'function') return input(name);
-  if (input instanceof RegExp) return input.test(name);
-
-  console.warn(`[md-core] the middleware: ${middleware.name || 'unknow'}@${middleware.version || 'unknow'}'s input property is illegal`);
-  return false;
-}
-
-const matchMiddleware = (middlewares, option, context, node) => {
+const  parse = (middlewares, astNode, option) => {
+  // OPTIMIZE: 以middleware的input作为key生成一个mapping，如果不存在的key的astNode，进行循环（推荐使用缓存函数）
   for (let middleware of middlewares) {
-    if (matchName(middleware, node, option)) {
-      /**
-       * 尝试编译
-       * 如果有中间件返回 node || undefined || null
-       * 则该中间价无法解析该节点
-       */
-      let result = middleware.parse(node, option, context);
+    // console.log('middleware', middleware.toString())
+    if (!middleware.accept(astNode.type)) continue
+    const result = middleware.parse(astNode, node, option)
 
-      if (result === node || result === undefined || result === null) continue;
+    // cannot parse node
+    if (result !== astNode && result) console.log('parse: ', middleware.toString())
+    if (result === astNode || !result) continue
 
-      result.option = option;
-      result.context = context;
-
-      if (Array.isArray(result)) result = result.map(format);
-      else if (!isChild(result)) result = format(result);
-
-      return { matched: true, result, middleware };
-    }
+    if (Array.isArray(result)) return flatten(result.map(astNode => parse(middlewares, format(astNode), option)))
+    return parse(middlewares, format(result), option)
   }
 
-  return { matched: false };
+  astNode.children = flatten(astNode.children.map(astNode => parse(middlewares, astNode)))
+  return astNode
 }
 
-const parseArray = (middlewares, option, context, arr) => {
-  const results = arr
-    .map(child => parse(middlewares, option, context, child));
+export default (middlewares, option = {}, context = {}, string) => {
+  console.log('middlewares: ', middlewares.map(middleware => `${middleware.name}@${middleware.version}`))
+  const source = node('source', string)
+  const tree = parse(middlewares, source, option)
 
-  return [].concat.apply([], results);
-}
-
-const parse = (middlewares, option, context, node) => {
-  // const { notice } = option.logger;
-
-  const { matched, result, middleware } = matchMiddleware(middlewares, option, context, node);
-
-  if (matched) {
-    // console.log('[md-core] input: ', node);
-    // console.log(`[md-core] middleware: ${middleware}`);
-    // console.log('[md-core] output: ', result);
-    // console.log('---------------------------------------------------------------------------------------');
-
-    if (Array.isArray(result)) return parseArray(middlewares, option, context, result);
-    return parse(middlewares, option, context, result);
-  }
-
-  // console.log('[md-core] unmatched', node)
-
-  if (isFragment(node)) return parseArray(middlewares, option, context, node.children);
-  if (isVNode(node)) node.children = parseArray(middlewares, option, context, node.children);
-  return node;
-}
-
-export default (middlewares, option, context, string) => {
-  // const { notice } = option.logger;
-
-  const source$ = vtext(string);
-  source$.name = 'source';
-  source$.option = option;
-  source$.context = context;
-
-  // console.log('========START========');
-  const result = parse(middlewares, option, context, source$);
-  // console.log('=========END=========');
-  return isChild(result) ? result : fragment(result) ;
+  return root(tree)
 }
