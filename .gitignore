@@ -11,6 +11,7 @@ dist/
 
 # Editor
 *.swp
+.vscode
 
 # Lock File
 package-lock.json

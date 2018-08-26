@@ -13,17 +13,22 @@ npm install md-core
 ## Usage
 
 md-core is just a core, need plugins to parse markdown
-see more: [md-plugins-vig](https://github.com/Val-istar-Guo/md-plugins-vig).
+see more:
+[md-plugins-vig](https://github.com/Val-istar-Guo/md-plugins-vig),
+[md-highlight](https://github.com/Val-istar-Guo/md-plugins-highlight).
+
 
 ```javascript
 // costom your md
 // md.js
 import md from 'md-core';
-import { plugins } from 'md-plugins-vig';
+import { vigMdPlugins } from 'md-plugins-vig';
+import { highlightMdPlugins } from 'md-plugins-highlight';
 
 
 export default md()
-  .use(plugins())
+  .use(vigMdPlugins())
+  .use(highlightMdPlugins())
 ```
 
 Then import your costom md

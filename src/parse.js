@@ -10,7 +10,7 @@ const  parse = (middlewares, astNode, option) => {
     const result = middleware.parse(astNode, node, option)
 
     // cannot parse node
-    if (result !== astNode && result) console.log('parse: ', middleware.toString())
+    // if (result !== astNode && result) console.log('parse: ', middleware.toString())
     if (result === astNode || !result) continue
 
     if (Array.isArray(result)) return flatten(result.map(astNode => parse(middlewares, format(astNode), option)))
@@ -22,7 +22,7 @@ const  parse = (middlewares, astNode, option) => {
 }
 
 export default (middlewares, option = {}, context = {}, string) => {
-  console.log('middlewares: ', middlewares.map(middleware => `${middleware.name}@${middleware.version}`))
+  // console.log('middlewares: ', middlewares.map(middleware => `${middleware.name}@${middleware.version}`))
   const source = node('source', string)
   const tree = parse(middlewares, source, option)
 

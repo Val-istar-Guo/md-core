@@ -1,34 +1,13 @@
-import resolve from 'rollup-plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
+import { compiler } from './build.config'
 
 
-const plugins = [
-  resolve(),
-  babel({
-    babelrc: false,
-    presets: [
-      ["env", {
-        modules: false
-      }],
-    ],
-    plugins: ["transform-object-rest-spread", "external-helpers"],
-    // runtimeHelpers: true,
-    exclude: 'node_modules/**',
+export default [
+  compiler({
+    input: 'src/index.js',
+    output: { file: 'dist/bundle.js' },
+  }),
+  compiler({
+    input: 'src/tools/index.js',
+    output: { file: 'utils.js' },
   }),
 ]
-
-export default [{
-  input: 'src/index.js',
-  output: {
-    file: 'dist/index.js',
-    format: 'cjs',
-  },
-  plugins,
-}, {
-  input: 'src/tools/index.js',
-  output: {
-    file: 'utils.js',
-    format: 'cjs',
-  },
-  plugins,
-}];

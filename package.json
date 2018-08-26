@@ -1,15 +1,16 @@
 {
   "name": "md-core",
-  "version": "1.2.0",
+  "version": "2.0.0-alpha.1",
   "description": "markdown parse core",
-  "main": "dist/",
+  "main": "dist/bundle.js",
   "scripts": {
     "clean": "rm -rf ./dist/*",
     "build": "npm run clean & rollup -c",
     "test": "ava",
     "prepublishOnly": "npm test; npm run build",
     "precommit": "npm test",
-    "upgrade": "mili upgrade"
+    "premili:upgrade": "npm install mili@latest -D",
+    "mili:upgrade": "mili upgrade"
   },
   "repository": {
     "type": "git",
@@ -41,9 +42,11 @@
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "husky": "^0.14.3",
-    "mili": "0.0.1",
+    "mili": "0.0.4",
     "rollup": "^0.58.0",
     "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.3.0"
   },
   "dependencies": {},
