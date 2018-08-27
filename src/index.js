@@ -2,6 +2,7 @@ import parse from './parse'
 import { merge } from './utils'
 
 
+const nameEqual = (a, b) => a.name === b.name
 function Md(option = {}) {
   if (!(this instanceof Md)) return new Md(option)
 
@@ -32,8 +33,8 @@ Md.prototype.parse = function (string, runtimeOption = {}) {
 Md.prototype.use = function (creator) {
   const { middlewares = [], preprocessors = [] } = creator(this.option)
 
-  this.middlewares = merge(this.middlewares, middlewares)
-  this.preprocessors = merge(this.preprocessors, preprocessors)
+  this.middlewares = merge(this.middlewares, middlewares, nameEqual)
+  this.preprocessors = merge(this.preprocessors, preprocessors, nameEqual)
 
   return this;
 }
