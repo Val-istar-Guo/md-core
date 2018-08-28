@@ -104,4 +104,3 @@ export const merge = (array1, array2, equal) => {
 
   return queue
 }
-

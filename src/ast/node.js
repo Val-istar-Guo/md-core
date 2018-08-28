@@ -28,7 +28,9 @@ export const node = (type, value = '', children = []) => {
 
     toHTML(option) {
       const result = this.parse(vdom(option))
-      return Array.isArray(result) ? result.join('') : result;
+
+      if (!Array.isArray(result)) return typeof result === 'string' ? result : result.value
+      return result.map(child => typeof child === 'string' ? child : child.value).join('')
     },
 
     toVDom(h) {
