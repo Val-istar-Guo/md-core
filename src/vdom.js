@@ -1,4 +1,4 @@
-import { htmlEncode, combineString } from '../utils'
+import { htmlEncode, combineString } from './utils'
 
 
 export default ({ separator = '' } = {}) => (tagName, properties = {}, children = []) => {

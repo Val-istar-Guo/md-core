@@ -1,4 +1,4 @@
-import { merge } from '../utils'
+import merge from '../utils/merge'
 
 
 const nameEqual = (a, b) => a.name === b.name
