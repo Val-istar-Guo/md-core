@@ -4,6 +4,9 @@
 [![downloads](https://img.shields.io/npm/dm/md-core.svg?style=flat-square)](https://www.npmjs.com/package/md-core)
 
 
+**This Package was deprecated. [Unified](https://github.com/unifiedjs/unified) is the better option. And you can use [rehype-prism](https://github.com/Val-istar-Guo/rehype-prism) to highlight code in markdown.**
+
+
 ## Install
 
 ```bash
